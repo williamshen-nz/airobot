@@ -4,7 +4,7 @@ set -e
 # setup ros environment
 source "/root/catkin_ws/devel/setup.bash"
 
-pip install -e /home/improbable/airobot
+pip install -e /root/improbable/airobot
 
 eval "bash"
 

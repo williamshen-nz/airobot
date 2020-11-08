@@ -7,8 +7,8 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     build-essential \
     make \
     cmake \
-    curl \
     git \
+    curl \
     wget \
     gfortran \
     software-properties-common \
@@ -27,13 +27,16 @@ DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends \
     libqt5x11extras5 \
     libtbb2 \
     libtheora0 \
-    libyaml-cpp0.5v5 \
     libpng-dev \
+    libv4l-dev \
+    libzbar-dev \
+    libglfw3-dev \
     qtbase5-dev \
     zlib1g \
     dirmngr \
     gnupg2 \
-    lsb-release
+    lsb-release \
+    htop
 
 apt-get clean
 

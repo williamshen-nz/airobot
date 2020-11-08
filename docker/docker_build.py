@@ -48,14 +48,14 @@ if __name__ == '__main__':
                         default=default_image_name,
                         help='name for new docker image')
 
-    parser.add_argument('--no_cache', action='store_true',
+    parser.add_argument('--no-cache', action='store_true',
                         help='0 if should build without using cache')
 
-    parser.add_argument('-f', '--docker_file', type=str,
+    parser.add_argument('-f', '--docker-file', type=str,
                         default='ur5e_2f140_cuda.dockerfile',
                         help='which Dockerfile to build from')
 
-    parser.add_argument('-d', '--dry_run', action='store_true',
+    parser.add_argument('-d', '--dry-run', action='store_true',
                         help='1 if we should only print the build command '
                              'without executing')
 

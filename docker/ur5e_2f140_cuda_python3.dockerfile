@@ -4,11 +4,9 @@
 # Building from nvidia-opengl for visualization capability
 FROM ubuntu:xenial as intermediate
 
-RUN apt-get update -q \
-    && DEBIAN_FRONTEND=noninteractive apt-get install -y \
-    git \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+RUN  apt-get -yq update && \
+     apt-get -yqq install ssh git \
+     && rm -rf /var/lib/apt/lists/*
 
 RUN mkdir /root/tmp_code
 RUN mkdir /root/tmp_thirdparty
@@ -30,7 +28,14 @@ WORKDIR /root/tmp_code/ur5e
 RUN --mount=type=ssh git submodule update --init
 
 ### second stage ###
-FROM nvidia/cudagl:10.1-runtime-ubuntu16.04
+FROM nvidia/cudagl:11.1-runtime-ubuntu20.04
+
+# setup timezone
+RUN echo 'Etc/UTC' > /etc/timezone && \
+    ln -s /usr/share/zoneinfo/Etc/UTC /etc/localtime && \
+    apt-get update && \
+    apt-get install -q -y --no-install-recommends tzdata && \
+    rm -rf /var/lib/apt/lists/*
 
 ENV LC_ALL C.UTF-8
 ENV LANG C.UTF-8
@@ -41,54 +46,64 @@ RUN mv /bin/sh /bin/sh-old && \
 
 # install basic system stuff
 COPY ./install_scripts/install_basic.sh /tmp/install_basic.sh
-RUN chmod +x /tmp/install_basic.sh
-RUN /tmp/install_basic.sh
+RUN chmod +x /tmp/install_basic.sh && /tmp/install_basic.sh
+
+COPY ./install_scripts/install_python3_8.sh /tmp/install_python3_8.sh
+RUN chmod +x /tmp/install_python3_8.sh && /tmp/install_python3_8.sh
 
 # install ROS stuff
-ENV ROS_DISTRO kinetic
+ENV ROS_DISTRO noetic
 
-COPY install_scripts/install_ros_kinetic.sh /tmp/install_ros_kinetic.sh
-RUN chmod +x /tmp/install_ros_kinetic.sh && /tmp/install_ros_kinetic.sh
+COPY install_scripts/install_ros_noetic.sh /tmp/install_ros_noetic.sh
+RUN chmod +x /tmp/install_ros_noetic.sh && /tmp/install_ros_noetic.sh
 
-# bootstrap rosdep
-RUN rosdep init \
-  && rosdep update
 
 # create catkin workspace
-ENV CATKIN_WS=/root/catkin_ws
+ENV CATKIN_WS /root/catkin_ws
 RUN source /opt/ros/$ROS_DISTRO/setup.bash && mkdir -p $CATKIN_WS/src
 WORKDIR ${CATKIN_WS}
 RUN catkin init && catkin config --extend /opt/ros/$ROS_DISTRO \
     --cmake-args -DCMAKE_BUILD_TYPE=Release -DCATKIN_ENABLE_TESTING=False
 WORKDIR $CATKIN_WS/src
 
-
 # install realsense camera deps
-COPY install_scripts/install_realsense.sh /tmp/install_realsense.sh
-RUN chmod +x /tmp/install_realsense.sh && /tmp/install_realsense.sh
+COPY install_scripts/install_realsense_src.sh /tmp/install_realsense_src.sh
+RUN chmod +x /tmp/install_realsense_src.sh && /tmp/install_realsense_src.sh
 
 # clone repositories into workspace and build
 WORKDIR ${CATKIN_WS}/src
 
 RUN git clone https://github.com/IntelRealSense/realsense-ros.git && \
     cd realsense-ros/ && \
-    git checkout `git tag | sort -V | grep -P "^\d+\.\d+\.\d+" | tail -1` && \
+    git checkout `git tag | sort -V | grep -P "^2.\d+\.\d+" | tail -1` && \
     cd .. && \
-    git clone https://github.com/pal-robotics/aruco_ros.git
+    git clone https://github.com/Improbable-AI/aruco_ros.git && \
+    git clone https://github.com/pal-robotics/ddynamic_reconfigure.git && \
+    git clone https://github.com/lagadic/vision_visp.git && \
+    cd vision_visp && rm -rf visp_auto_tracker && \
+    cd ..
 
-# install pytorch and cuDNN
-ENV CUDNN_VERSION 7.6.5.32
-LABEL com.nvidia.cudnn.version="${CUDNN_VERSION}"
 
-COPY ./install_scripts/install_pytorch.sh /tmp/install_pytorch.sh
-RUN chmod +x /tmp/install_pytorch.sh && /tmp/install_pytorch.sh
-
-# copy over ur5e repositoriy from cloning private repo    
+# copy over ur5e repositoriy from cloning private repo
 COPY --from=intermediate /root/tmp_code ${CATKIN_WS}/src/
 
+# install visp (only required if you need to do camera hand-eye calibration
+COPY install_scripts/install_visp.sh /tmp/install_visp.sh
+RUN chmod +x /tmp/install_visp.sh && /tmp/install_visp.sh
 # build
+ENV VISP_DIR /root/visp-ws/visp-build
+
+## currently (11/08/2020), industrial_trajectory_filters still fails to compile for ROS noetic
+RUN cd ur5e/industrial_core && rm -rf industrial_trajectory_filters
 WORKDIR ${CATKIN_WS}
 RUN catkin build
+
+# install pytorch and cuDNN
+ENV CUDNN_VERSION 8.0.4.30
+LABEL com.nvidia.cudnn.version="${CUDNN_VERSION}"
+
+COPY ./install_scripts/install_pytorch_cudnn8.sh /tmp/install_pytorch_cudnn8.sh
+RUN chmod +x /tmp/install_pytorch_cudnn8.sh && /tmp/install_pytorch_cudnn8.sh
 
 ENV IMPROB /root/improbable
 RUN mkdir ${IMPROB}

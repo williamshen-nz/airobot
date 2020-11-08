@@ -6,9 +6,7 @@ apt-key adv --keyserver hkp://keyserver.ubuntu.com:80 --recv-keys C1CF6E31E6BADE
 
 echo "deb http://packages.ros.org/ros/ubuntu `lsb_release -sc` main" > /etc/apt/sources.list.d/ros-latest.list
 
-apt-get update
-
-apt-get install -y  \
+apt-get update && apt-get install -q -y --no-install-recommends \
   ros-kinetic-ros-core=1.3.2-0* \
   git-core \
   python-argparse \
@@ -36,7 +34,7 @@ apt-get install -y  \
   ros-kinetic-orocos-kdl \
   ros-kinetic-kdl-parser-py \
   ros-kinetic-kdl-parser \
-  ros-kinetic-moveit-simple-controller-manager \
+  ros-kinetic-moveit-* \
   ros-kinetic-trac-ik \
   ros-kinetic-robot-state-publisher \
   ros-kinetic-gazebo-ros-pkgs \
@@ -44,11 +42,8 @@ apt-get install -y  \
   ros-kinetic-rgbd-launch \
   ros-kinetic-visp-hand2eye-calibration \
   ros-kinetic-ddynamic-reconfigure \
-  software-properties-common
-
-rm -rf /var/lib/apt/lists/*
+  && rm -rf /var/lib/apt/lists/*
 
 pip install --upgrade pip==9.0.3
-
 pip install rospkg
 pip install -U catkin_tools
