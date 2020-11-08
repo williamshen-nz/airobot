@@ -1,4 +1,4 @@
-IMAGE=anthonysimeonov/airobot-cuda-dev:latest
+IMAGE=improbableailab/ur5e-ros:kinetic-cuda
 XAUTH=/tmp/.docker.xauth
 if [ ! -f $XAUTH ]
 then

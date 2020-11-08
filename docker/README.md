@@ -56,9 +56,9 @@ sudo systemctl restart docker
 ```
 
 ## Pulling the Pre-Built Images
-The image is set up with CUDA 10.1, cuDNN 7.6, and PyTorch 1.3 installed (```airobot-cuda-dev```)
+The image is set up with CUDA 10.1, cuDNN 7.6, and PyTorch 1.4 installed (```airobot-cuda-dev```)
 ```
-docker pull anthonysimeonov/airobot-cuda-dev:latest
+docker pull improbableailab/ur5e-ros:kinetic-cuda
 ```
 
 
