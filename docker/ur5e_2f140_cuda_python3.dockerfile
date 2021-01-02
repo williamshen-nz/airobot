@@ -31,8 +31,8 @@ RUN --mount=type=ssh git submodule update --init
 FROM nvidia/cudagl:11.1-runtime-ubuntu20.04
 
 # setup timezone
-RUN echo 'Etc/UTC' > /etc/timezone && \
-    ln -s /usr/share/zoneinfo/Etc/UTC /etc/localtime && \
+RUN echo 'America/New_York' > /etc/timezone && \
+    ln -s /usr/share/zoneinfo/America/New_York /etc/localtime && \
     apt-get update && \
     apt-get install -q -y --no-install-recommends tzdata && \
     rm -rf /var/lib/apt/lists/*
