@@ -140,6 +140,8 @@ class Robot:
                                                 cam_cls_name_to_path[cls_name])
             self.cam = camera_class(cfgs, **cam_cfg)
         cfgs.freeze()
+        self.cfgs = cfgs
+
         time.sleep(1.0)  # sleep to give subscribers time to connect
 
 

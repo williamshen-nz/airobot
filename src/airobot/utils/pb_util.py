@@ -20,7 +20,8 @@ GRAVITY_CONST = -9.8
 
 def create_pybullet_client(gui=True,
                            realtime=True,
-                           opengl_render=True):
+                           opengl_render=True,
+                           shadows=False):
     """
     Create a pybullet simulation client.
 
@@ -37,6 +38,8 @@ def create_pybullet_client(gui=True,
     pb_client = BulletClient(connection_mode=mode,
                              realtime=realtime,
                              opengl_render=opengl_render)
+
+    pb_client.configureDebugVisualizer(p.COV_ENABLE_SHADOWS, shadows)
     pb_client.setAdditionalSearchPath(pybullet_data.getDataPath())
     return pb_client
 

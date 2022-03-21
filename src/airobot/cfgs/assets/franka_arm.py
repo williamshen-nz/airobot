@@ -36,7 +36,9 @@ _C.MAX_EE_ORI_ERROR = 0.02
 _C.TIMEOUT_LIMIT = 10
 
 # reset position for the robot in pybullet
-_C.PYBULLET_RESET_POS = [0, 0, 1]
+# _C.PYBULLET_RESET_POS = [0, 0, 1]
+_C.PYBULLET_RESET_POS = [0, 0, 0]
+
 # reset orientation (euler angles) for the robot in pybullet
 _C.PYBULLET_RESET_ORI = [0, 0, 0]
 _C.PYBULLET_IK_DAMPING = 0.0005

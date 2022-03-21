@@ -53,10 +53,10 @@ class FrankaPybullet(SingleArmPybullet):
         self._pb.configureDebugVisualizer(self._pb.COV_ENABLE_RENDERING, 0)
         if self._first_reset or force_reset:
             self._pb.resetSimulation()
-            self.floor_id = self._pb.load_geom('box', size=[10, 10, 0.01], mass=0,
-                                               base_pos=[0, 0, 0],
-                                               rgba=[0.7, 0.77, 0.7, 1],
-                                               specular=[1, 1, 1, 1])
+            # self.floor_id = self._pb.load_geom('box', size=[10, 10, 0.01], mass=0,
+            #                                    base_pos=[0, 0, 0],
+            #                                    rgba=[0.7, 0.77, 0.7, 1],
+            #                                    specular=[1, 1, 1, 1])
 
             self.robot_base_pos = self.cfgs.ARM.PYBULLET_RESET_POS
             robot_base_ori = self.cfgs.ARM.PYBULLET_RESET_ORI

@@ -19,7 +19,7 @@ class RGBDCameraPybullet(RGBDCamera):
             opengl camera (shape: :math:`[4, 4]`).
     """
 
-    def __init__(self, cfgs, pb_client):
+    def __init__(self, cfgs, pb_client, name=None):
         self._pb = pb_client
         super(RGBDCameraPybullet, self).__init__(cfgs=cfgs)
         self.view_matrix = None
@@ -28,6 +28,7 @@ class RGBDCameraPybullet(RGBDCamera):
         self.depth_min = self.cfgs.CAM.SIM.ZNEAR
         self.depth_max = self.cfgs.CAM.SIM.ZFAR
         self._set_cam_int()
+        self.name = name
 
     def _set_cam_int(self, img_height=None, img_width=None):
         self.img_height = img_height if img_height else self.cfgs.CAM.SIM.HEIGHT
